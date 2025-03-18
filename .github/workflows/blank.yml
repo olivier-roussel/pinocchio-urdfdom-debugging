@@ -1,0 +1,32 @@
+name: C++ CI Workflow with conda-forge dependencies
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+  schedule:
+  # * is a special character in YAML so you have to quote this string
+  # Execute a "nightly" build at 2 AM UTC
+  - cron:  '0 2 * * *'
+
+jobs:
+  build:
+    name: '[${{ matrix.os }}@${{ matrix.build_type }}@conda]'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build_type: [Release]
+        os: [ubuntu-latest, windows-2019, macos-13, macos-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: .github/workflows/ci_env.yml
+
+    - name: Run test
+      shell: bash -l {0}
+      run: |
+        python -c -c "import pinocchio; print(pinocchio.__version__)"
