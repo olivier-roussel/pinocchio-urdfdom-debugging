@@ -36,4 +36,4 @@ jobs:
     - name: Run test
       shell: bash -l {0}
       run: |
-        python -c  "import pinocchio; print(pinocchio.__version__)"
+        python3 -c  "import pinocchio; print(pinocchio.__version__)"
