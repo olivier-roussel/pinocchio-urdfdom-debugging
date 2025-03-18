@@ -32,6 +32,7 @@ jobs:
       shell: bash -l {0}
       run: |
         micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
+        micromamba list
 
     - name: Run test
       shell: bash -l {0}
