@@ -32,18 +32,16 @@ jobs:
       run: |
         sudo apt-get install zsh
 
-    - uses: mamba-org/setup-micromamba@v1
+    - uses: conda-incubator/setup-miniconda@v3
       with:
         environment-file: .github/workflows/ci_env.yml
-        init-shell: >-
-          bash
-          zsh
+        miniforge-version: latest
 
     - name: Install dependencies
       shell: bash -l {0}
       run: |
-        micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
-        micromamba list
+        conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
+        conda list
 
     - name: Run test [bash]
       if: contains(matrix.shell, 'bash')
