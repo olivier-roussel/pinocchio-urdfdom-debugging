@@ -19,7 +19,7 @@ jobs:
         pinocchio_version: [3.3.0, 3.3.1, 3.4.0]
         urdfdom_version: [4.0.1=*_0, 4.0.1=*_1]
         python_version: ["3.10", 3.11, 3.12, 3.13]
-        shell: ["zsh", "bash -l {0}"]
+        shell: ["zsh", "bash"]
       fail-fast: false
 
     steps:
@@ -33,12 +33,19 @@ jobs:
           zsh
 
     - name: Install dependencies
-      shell: ${{ matrix.shell }}
+      shell: bash -l {0}
       run: |
         micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
         micromamba list
 
-    - name: Run test
+    - name: Run test [bash]
+      if: contains(matrix.shell, 'bash')
       shell: bash -l {0}
+      run: |
+        python3 -c  "import pinocchio; print(pinocchio.__version__)"
+
+    - name: Run test
+      if: contains(matrix.shell, 'zsh')
+      shell: zsh
       run: |
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
