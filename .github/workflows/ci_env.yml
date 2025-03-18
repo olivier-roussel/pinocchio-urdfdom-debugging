@@ -2,4 +2,4 @@ name: idynfordev
 channels:
   - conda-forge
 dependencies:
-  - pinocchio
+  - zlib
