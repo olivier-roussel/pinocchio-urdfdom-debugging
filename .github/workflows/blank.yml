@@ -32,16 +32,8 @@ jobs:
       run: |
         sudo apt-get install zsh
 
-    - name: Setup miniconda [zsh]
-      if: contains(matrix.shell, 'zsh')
-      shell: zsh -l {0}
-      uses: conda-incubator/setup-miniconda@v3
-        miniforge-version: latest
-
-    - name: Setup miniconda [bash]
-      if: contains(matrix.shell, 'bash')
-      shell: bash -l {0}
-      uses: conda-incubator/setup-miniconda@v3
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
         miniforge-version: latest
 
     - name: Init conda for zsh [zsh]
