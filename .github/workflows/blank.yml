@@ -34,19 +34,30 @@ jobs:
 
     - uses: conda-incubator/setup-miniconda@v3
       with:
-        environment-file: .github/workflows/ci_env.yml
         miniforge-version: latest
 
-    - name: Init conda for zsh
+    - name: Init conda for zsh [zsh]
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
         conda init zsh
         conda env list
 
-    - name: Install dependencies
+    - name: Init conda env [zsh]
+      if: contains(matrix.shell, 'zsh')
+      shell: zsh -l {0}
+      run: |
+        conda create -n debug-pinocchio
+        conda activate debug-pinocchio
+        conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
+        conda list
+
+    - name: Init conda env [bash]
+      if: contains(matrix.shell, 'bash')
       shell: bash -l {0}
       run: |
+        conda create -n debug-pinocchio
+        conda activate debug-pinocchio
         conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
         conda list
 
@@ -54,11 +65,12 @@ jobs:
       if: contains(matrix.shell, 'bash')
       shell: bash -l {0}
       run: |
+        conda activate debug-pinocchio
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
 
     - name: Run test
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
-        conda activate idynfordev
+        conda activate debug-pinocchio
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
