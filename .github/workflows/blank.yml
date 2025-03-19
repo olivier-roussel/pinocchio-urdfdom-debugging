@@ -32,8 +32,16 @@ jobs:
       run: |
         sudo apt-get install zsh
 
-    - uses: conda-incubator/setup-miniconda@v3
-      with:
+    - name: Setup miniconda [zsh]
+      if: contains(matrix.shell, 'zsh')
+      shell: zsh -l {0}
+      uses: conda-incubator/setup-miniconda@v3
+        miniforge-version: latest
+
+    - name: Setup miniconda [bash]
+      if: contains(matrix.shell, 'bash')
+      shell: bash -l {0}
+      uses: conda-incubator/setup-miniconda@v3
         miniforge-version: latest
 
     - name: Init conda for zsh [zsh]
@@ -51,7 +59,6 @@ jobs:
         conda activate debug-pinocchio
         conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
         conda list
-        python3 -c  "import pinocchio; print(pinocchio.__version__)"
 
     - name: Init conda env [bash]
       if: contains(matrix.shell, 'bash')
@@ -61,4 +68,17 @@ jobs:
         conda activate debug-pinocchio
         conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
         conda list
+
+    - name: Run test [bash]
+      if: contains(matrix.shell, 'bash')
+      shell: bash -l {0}
+      run: |
+        conda activate debug-pinocchio
+        python3 -c  "import pinocchio; print(pinocchio.__version__)"
+
+    - name: Run test [zsh]
+      if: contains(matrix.shell, 'zsh')
+      shell: zsh -l {0}
+      run: |
+        conda activate debug-pinocchio
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
