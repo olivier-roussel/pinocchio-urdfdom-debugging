@@ -40,6 +40,7 @@ jobs:
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
+        eval "$(micromamba shell hook --shell zsh)"
         micromamba create -n debug-pino
         micromamba activate debug-pino
         micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
@@ -65,5 +66,6 @@ jobs:
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
+        eval "$(micromamba shell hook --shell zsh)"
         micromamba activate debug-pino
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
