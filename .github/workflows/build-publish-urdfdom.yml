@@ -1,0 +1,57 @@
+name: build-publish-urdfdom
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-publish-panda3d:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [{platform: "osx-arm64", runner: "macos-14"}]
+
+    name: "Build and publish urdfdom - ${{ matrix.target.platform }}  packages on ${{ matrix.target.runner }}"
+    runs-on: ${{ matrix.target.runner }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        activate-environment: conda-ci
+        auto-update-conda: true
+        miniforge-version: latest
+
+    - name: Install conda environment
+      shell: bash -l {0}
+      run: |
+        conda install anaconda-client rattler-build -c conda-forge
+        conda config --set anaconda_upload no
+
+    - name: Show conda config
+      shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+        conda config --show-sources
+        conda config --show
+        printenv | sort
+
+    - name: Install MacOS SDK v11.0 / osx-arm64
+      shell: bash -l {0}
+      if: contains(matrix.target.platform, 'osx-arm64')
+      run: |
+        curl -L --output MacOSX11.0.sdk.tar.xz https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.0.sdk.tar.xz
+        mkdir $CONDA_PREFIX/SDKs
+        tar -xf MacOSX11.0.sdk.tar.xz -C $CONDA_PREFIX/SDKs
+        echo "CONDA_BUILD_SYSROOT=$CONDA_PREFIX/SDKs/MacOSX11.0.sdk" >> $GITHUB_ENV
+        echo "OSX_SDK_DIR=$CONDA_PREFIX/SDKs" >> $GITHUB_ENV
+
+    - name: Build & publish urdfdom conda package
+      shell: bash -l {0}
+      run: |
+        PKG_DIR=./rattler-bld
+        rattler-build build --recipe recipe/recipe.yaml --variant-config ../configs/${{ matrix.target.platform }}.yaml --variant-config --output-dir $PKG_DIR -c conda-forge
+        anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload -u olivier.roussel -l main $PKG_DIR/**/*.conda --force
