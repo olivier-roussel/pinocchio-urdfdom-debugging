@@ -32,45 +32,38 @@ jobs:
       run: |
         sudo apt-get install zsh
 
-    - uses: conda-incubator/setup-miniconda@v3
+    - uses: mamba-org/setup-micromamba@v2
       with:
-        miniforge-version: latest
+        init-shell: bash zsh
 
-    - name: Init conda for zsh [zsh]
+    - name: Install conda env [zsh]
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
-        conda init zsh
-        conda env list
+        micromamba create -n debug-pino
+        micromamba activate debug-pino
+        micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
+        micromamba list
 
-    - name: Init conda env [zsh]
-      if: contains(matrix.shell, 'zsh')
-      shell: zsh -l {0}
-      run: |
-        conda create -n debug-pinocchio
-        conda activate debug-pinocchio
-        conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
-        conda list
-
-    - name: Init conda env [bash]
+    - name: Install conda env [bash]
       if: contains(matrix.shell, 'bash')
       shell: bash -l {0}
       run: |
-        conda create -n debug-pinocchio
-        conda activate debug-pinocchio
-        conda install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
-        conda list
+        micromamba create -n debug-pino
+        micromamba activate debug-pino
+        micromamba install pinocchio=${{ matrix.pinocchio_version }} urdfdom=${{ matrix.urdfdom_version }} python=${{ matrix.python_version }}
+        micromamba list
 
     - name: Run test [bash]
       if: contains(matrix.shell, 'bash')
       shell: bash -l {0}
       run: |
-        conda activate debug-pinocchio
+        micromamba activate debug-pino
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
 
     - name: Run test [zsh]
       if: contains(matrix.shell, 'zsh')
       shell: zsh -l {0}
       run: |
-        conda activate debug-pinocchio
+        micromamba activate debug-pino
         python3 -c  "import pinocchio; print(pinocchio.__version__)"
