@@ -53,5 +53,5 @@ jobs:
       shell: bash -l {0}
       run: |
         PKG_DIR=./rattler-bld
-        rattler-build build --recipe recipe/recipe.yaml --variant-config ../configs/${{ matrix.target.platform }}.yaml --variant-config --output-dir $PKG_DIR -c conda-forge
+        rattler-build build --recipe recipe/recipe.yaml --variant-config .ci_support/${{ matrix.target.platform }}.yaml --output-dir $PKG_DIR -c conda-forge
         anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload -u olivier.roussel -l main $PKG_DIR/**/*.conda --force
