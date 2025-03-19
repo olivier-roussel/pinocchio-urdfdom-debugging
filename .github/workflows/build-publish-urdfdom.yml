@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [{platform: "osx-arm64", runner: "macos-14"}]
+        target: [{platform: "osx-arm64", runner: "macos-13"}]
 
     name: "Build and publish urdfdom - ${{ matrix.target.platform }}  packages on ${{ matrix.target.runner }}"
     runs-on: ${{ matrix.target.runner }}
@@ -53,5 +53,5 @@ jobs:
       shell: bash -l {0}
       run: |
         PKG_DIR=./rattler-bld
-        rattler-build build --recipe recipe/recipe.yaml --variant-config .ci_support/${{ matrix.target.platform }}.yaml --output-dir $PKG_DIR -c conda-forge
+        rattler-build build --recipe recipe/recipe.yaml --target-platform osx-arm64 --variant-config .ci_support/${{ matrix.target.platform }}.yaml --output-dir $PKG_DIR -c conda-forge
         anaconda -t ${{ secrets.ANACONDA_TOKEN }} upload -u olivier.roussel -l main $PKG_DIR/**/*.conda --force
