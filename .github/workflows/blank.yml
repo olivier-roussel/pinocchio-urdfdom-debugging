@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ macos-latest]
         pinocchio_version: [3.4.0]
-        urdfdom_version: [4.0.1=*_0, 4.0.1=*_1]
+        urdfdom_version: [4.0.1=h922ef61_0, 4.0.1=h1874252_1]
         python_version: [3.11]
         shell: ["zsh", "bash"]
       fail-fast: false
